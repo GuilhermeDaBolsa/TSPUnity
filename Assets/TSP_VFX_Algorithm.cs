@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 using UnityEngine;
 
 public abstract class TSP_VFX_Algorithm : MonoBehaviour {
@@ -63,8 +62,6 @@ public abstract class TSP_VFX_Algorithm : MonoBehaviour {
 
         UnityEngine.Debug.Log(name + " took " + timer.ElapsedMilliseconds + " ms to solve and the size of the path found is " + bestPathFoundDistance);
     }
-
-
 
 
     // STATIC TSP HELPERS //

@@ -8,7 +8,7 @@ public class TSP {
 
     private string m_filePath;
 
-    private List<int> m_BestTourIndexes;
+    public List<int> m_BestTourIndexes;
     public float m_BestTourDistance;
 
     public List<City> m_Cities;

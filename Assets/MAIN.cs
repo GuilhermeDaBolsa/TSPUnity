@@ -1,7 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -14,6 +11,14 @@ public class MAIN : MonoBehaviour {
 
 
     void Start() {
+        LineRenderer pathRenderer;
+        pathRenderer = new GameObject("BestPath").AddComponent<LineRenderer>();
+        pathRenderer.startWidth = 0.2f;
+        pathRenderer.endWidth = 0.2f;
+        pathRenderer.material = new Material(Shader.Find("Legacy Shaders/Particles/Alpha Blended Premultiply"));
+        pathRenderer.startColor = Color.white;
+        pathRenderer.endColor = Color.white;
+
         TSP ulysses16 = new TSP("Assets/Tests/ulysses16.tsp");
         Debug.Log("Problem ulysses16 loaded! Best tour distance is " + ulysses16.m_BestTourDistance);
 
@@ -35,11 +40,14 @@ public class MAIN : MonoBehaviour {
         TSP_solvers = new List<TSP_VFX_Algorithm> {
             //this.AddComponent<NearestNeighbour>(),
             //this.AddComponent<AntColony>(),
-            this.AddComponent<BranchAndBound>(),
+            //this.AddComponent<BranchAndBound>(),
             //this.AddComponent<BranchAndBoundGFG>(),
+            this.AddComponent<ConvexHullGrahamScan>(),
         };
 
         SpawnCities(ref ulysses16.m_Cities);
+
+        RenderBestPath(ref ulysses16.m_Cities, ref ulysses16.m_BestTourIndexes, ref pathRenderer);
 
         foreach (var algorithm in TSP_solvers) {
             algorithm.SolveAndFeedback(ulysses16.m_Cities);
@@ -52,5 +60,12 @@ public class MAIN : MonoBehaviour {
         for (int i = 1; i < cities.Count; i++) {
             Instantiate(this.CityPrefab, cities[i].position, Quaternion.identity);
         }
+    }
+
+    private void RenderBestPath(ref List<City> path, ref List<int> bestPathIndexes, ref LineRenderer pathRenderer) {
+        pathRenderer.positionCount = bestPathIndexes.Count;
+
+        for (int i = 0; i < bestPathIndexes.Count; i++)
+            pathRenderer.SetPosition(i, path[bestPathIndexes[i]].position);
     }
 }
