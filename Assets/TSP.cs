@@ -7,6 +7,7 @@ using UnityEngine;
 public class TSP {
 
     private string m_filePath;
+    private string m_fileName;
 
     public List<int> m_BestTourIndexes;
     public float m_BestTourDistance;
@@ -16,10 +17,11 @@ public class TSP {
 
     public TSP(string tspFilePath) {
         m_filePath = tspFilePath;
+        m_fileName = tspFilePath.Substring(tspFilePath.LastIndexOf('/') + 1);
 
         ImportTSPFromFile(tspFilePath);
-
-        CalculateBestTourDistance(ref m_BestTourIndexes);
+        CalculateBestTourDistance(m_BestTourIndexes);
+        Debug.Log("Problem " + m_fileName + " loaded! Best tour distance is " + m_BestTourDistance);
     }
 
     private void ImportTSPFromFile(string filePath) {
@@ -36,10 +38,13 @@ public class TSP {
 
         //BEST TOUR DATA
         string[] bestTourIndexes = lines[lineOfBestTour].Split(' ');
-        m_BestTourIndexes = new List<int>(bestTourIndexes.Length);
 
-        for (int i = 0; i < bestTourIndexes.Length; i++) {
-            m_BestTourIndexes.Add(Int32.Parse(bestTourIndexes[i]));
+        if(bestTourIndexes.Length > 0 ) {
+            m_BestTourIndexes = new List<int>(bestTourIndexes.Length);
+
+            for (int i = 0; i < bestTourIndexes.Length; i++) {
+                m_BestTourIndexes.Add(Int32.Parse(bestTourIndexes[i]));
+            }
         }
 
 
@@ -60,7 +65,7 @@ public class TSP {
         }
     }
 
-    private void CalculateBestTourDistance(ref List<int> bestTourIndexes) {
+    private void CalculateBestTourDistance(List<int> bestTourIndexes) {
         m_BestTourDistance = 0;
 
         for(int i = 0; i < bestTourIndexes.Count - 1; i++) {

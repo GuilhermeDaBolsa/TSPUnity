@@ -5,6 +5,8 @@ using UnityEngine;
  * index is the city's index in the original cities list
  */
 
+//TODO DESTROY THIS CLASS, USE VECTOR2 AND BE SMARTER....
+
 public struct City {
     public Vector2 position;
     public int index;
