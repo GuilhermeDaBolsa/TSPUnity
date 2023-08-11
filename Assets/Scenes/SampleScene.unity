@@ -221,9 +221,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   camera: {fileID: 519420031}
-  zoomStep: 1
+  zoomStep: 5
   minCamSize: 1
-  maxCamSize: 100
+  maxCamSize: 10000
 --- !u!1 &663588100
 GameObject:
   m_ObjectHideFlags: 0
@@ -268,6 +268,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d714d183a018614abb74a756bb27c33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mainCamera: {fileID: 519420031}
   CityPrefab: {fileID: 102986345673433142, guid: e5af634049bcc994da3872db35a28b47, type: 3}
   FirstCityPrefab: {fileID: 6259253023307226872, guid: 902057fff93a93d4d82667add894a622, type: 3}
   TSP_solvers: []

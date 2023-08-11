@@ -1,8 +1,11 @@
+using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
 public class MAIN : MonoBehaviour {
+
+    public Camera mainCamera;
 
     public GameObject CityPrefab;
     public GameObject FirstCityPrefab;
@@ -10,7 +13,9 @@ public class MAIN : MonoBehaviour {
     private LineRenderer BestPath;
 
     public List<TSP_VFX_Algorithm> TSP_solvers; //TODO (DEVERIA SER ALGO EXTERNO?)
-
+    private GrahamScanCoroutine grahamScanCoroutine;
+    private MultipleGrahamScanCoroutine multipleGrahamScanCoroutine;
+    private MultipleGrahamScanLastFirstCoroutine multipleGrahamScanLastFirstCoroutine;
 
     void Start() {
 
@@ -19,19 +24,57 @@ public class MAIN : MonoBehaviour {
          * ulysses8, ulysses16, crs5, cirs6, cirs8, att48
          */
 
-        TSP problem = new TSP("Assets/Tests/ulysses16.tsp");
+        //TSP problem = new TSP("Assets/Tests/att48.tsp");
+        TSP problem = TSPLib.Import("Assets/Tests/TSPLib/", "ulysses16");
 
         SpawnCities(problem.m_Cities);
 
-        if(problem.m_BestTourIndexes != null) {
-            RenderBestPath(problem.m_Cities, problem.m_BestTourIndexes);
+
+        float[] externalValues = new float[4] { 
+            problem.m_Cities[0].position.y,
+            problem.m_Cities[0].position.x,
+            problem.m_Cities[0].position.y,
+            problem.m_Cities[0].position.x 
+        };
+        
+        foreach(var city in problem.m_Cities) {
+            if (city.position.y > externalValues[0])
+                externalValues[0] = city.position.y;
+
+            if (city.position.y < externalValues[2])
+                externalValues[2] = city.position.y;
+
+            if (city.position.x > externalValues[1])
+                externalValues[1] = city.position.x;
+
+            if (city.position.x < externalValues[3])
+                externalValues[3] = city.position.x;
         }
 
-        SpawnTSPSolvers(problem);
+        mainCamera.transform.position = new Vector3(
+            (externalValues[1] + externalValues[3]) / 2,
+            (externalValues[0] + externalValues[2]) / 2,
+            -10
+        );
+
+        float xDistance = externalValues[1] - externalValues[3];
+        float yDistance = externalValues[0] - externalValues[2];
+
+        float greaterDistance = xDistance > yDistance ? xDistance : yDistance;
+
+        float lineWidth = greaterDistance / 100 + 0.2f;
+
+
+
+        if (problem.m_BestTourIndexes != null) {
+            RenderBestPath(problem.m_Cities, problem.m_BestTourIndexes, lineWidth/2);
+        }
+
+        SpawnTSPSolvers(problem, lineWidth);
     }
 
-    private void SpawnTSPSolvers(TSP problem) {
-        TSP_solvers = new List<TSP_VFX_Algorithm> {
+    private void SpawnTSPSolvers(TSP problem, float lineWidth) {
+        /*TSP_solvers = new List<TSP_VFX_Algorithm> {
             //this.AddComponent<NearestNeighbour>(),
             //this.AddComponent<AntColony>(),
             //this.AddComponent<BranchAndBound>(),
@@ -41,7 +84,16 @@ public class MAIN : MonoBehaviour {
 
         foreach (var algorithm in TSP_solvers) {
             algorithm.SolveAndFeedback(problem.m_Cities);
-        }
+        }*/
+
+        /*grahamScanCoroutine = this.AddComponent<GrahamScanCoroutine>();
+        grahamScanCoroutine.Initialize(new List<City>(problem.m_Cities), lineWidth);*/
+
+        multipleGrahamScanCoroutine = this.AddComponent<MultipleGrahamScanCoroutine>();
+        multipleGrahamScanCoroutine.Initialize(new List<City>(problem.m_Cities), lineWidth);
+
+        /*multipleGrahamScanLastFirstCoroutine = this.AddComponent<MultipleGrahamScanLastFirstCoroutine>();
+        multipleGrahamScanLastFirstCoroutine.Initialize(new List<City>(problem.m_Cities), lineWidth);*/
     }
 
     private void SpawnCities(List<City> cities) {
@@ -52,8 +104,8 @@ public class MAIN : MonoBehaviour {
         }
     }
 
-    private void RenderBestPath(List<City> path, List<int> bestPathIndexes) {
-        BestPath = CreateLineRenderer("BestPath", 0.2f, Color.white);
+    private void RenderBestPath(List<City> path, List<int> bestPathIndexes, float lineWidth) {
+        BestPath = CreateLineRenderer("BestPath", lineWidth, new Color(1,1,1,0.5f));
         BestPath.positionCount = bestPathIndexes.Count;
 
         for (int i = 0; i < bestPathIndexes.Count; i++)

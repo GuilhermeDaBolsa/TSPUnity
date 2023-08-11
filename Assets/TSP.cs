@@ -2,9 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 
 public class TSP {
+
+    //-- Properties from TSPLib --//
+    public string m_Name;
+    public string m_Comment;
+    public string m_Type;
+    public int m_Size;
+
 
     private string m_filePath;
     private string m_fileName;
@@ -15,13 +23,23 @@ public class TSP {
     public List<City> m_Cities;
 
 
+    public TSP() {
+        m_Cities = new List<City>();
+        m_BestTourIndexes = new List<int>();
+    }
+
     public TSP(string tspFilePath) {
         m_filePath = tspFilePath;
         m_fileName = tspFilePath.Substring(tspFilePath.LastIndexOf('/') + 1);
 
         ImportTSPFromFile(tspFilePath);
-        CalculateBestTourDistance(m_BestTourIndexes);
-        Debug.Log("Problem " + m_fileName + " loaded! Best tour distance is " + m_BestTourDistance);
+
+        ConcludeImporting();
+    }
+
+    public void ConcludeImporting() {
+        CalculateBestTourDistance();
+        Debug.Log("Problem " + m_Name + " loaded! Best tour distance is " + m_BestTourDistance);
     }
 
     private void ImportTSPFromFile(string filePath) {
@@ -65,13 +83,13 @@ public class TSP {
         }
     }
 
-    private void CalculateBestTourDistance(List<int> bestTourIndexes) {
+    private void CalculateBestTourDistance() {
         m_BestTourDistance = 0;
 
-        for(int i = 0; i < bestTourIndexes.Count - 1; i++) {
+        for(int i = 0; i < m_BestTourIndexes.Count - 1; i++) {
             m_BestTourDistance += Vector2.Distance(
-                m_Cities[bestTourIndexes[i]].position,
-                m_Cities[bestTourIndexes[i + 1]].position);
+                m_Cities[m_BestTourIndexes[i]].position,
+                m_Cities[m_BestTourIndexes[i + 1]].position);
         }
     }
 }

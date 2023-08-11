@@ -65,13 +65,6 @@ public class ConvexHull {
     public static ConvexHull GrahamScan(List<City> cities) {
         List<City> convexHullPoints = new List<City>();
 
-        //I DONT KNOW... MAYBE IT WORKS WITHOUT THIS IF
-        if (cities.Count <= 3) {
-            convexHullPoints.AddRange(cities);
-            convexHullPoints.Add(convexHullPoints[0]);
-            return new ConvexHull(convexHullPoints);
-        }
-
         int lowestCityIndex = 0;
 
         /*
