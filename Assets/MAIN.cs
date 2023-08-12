@@ -20,12 +20,26 @@ public class MAIN : MonoBehaviour {
     void Start() {
 
         /*
-         * TSPs available
-         * ulysses8, ulysses16, crs5, cirs6, cirs8, att48
+         * From Assets/Tests/Mine/ folder:
+         * 
+         * --- Confirmed opt. tour ---
+         * crs5, cirs6, cirs8, ulysses8
+         * 
+         * 
+         * 
+         * From Assets/Tests/TSPLib/ folder:
+         * 
+         * --- Confirmed opt. tour ---
+         * ulysses16
+         * 
+         * --- Not confirmed opt. tour ---
+         * ulysses22, att48, eil51, berlin52, ch130, a280
+         * 
+         * --- Does not have opt. tour ---
+         * burma14, bier127, att532, ali535, brd14051
          */
 
-        //TSP problem = new TSP("Assets/Tests/att48.tsp");
-        TSP problem = TSPLib.Import("Assets/Tests/TSPLib/", "ulysses16");
+        TSP problem = TSPLib.Import("Assets/Tests/Mine/", "ulysses8");
 
         SpawnCities(problem.m_Cities);
 
@@ -86,14 +100,14 @@ public class MAIN : MonoBehaviour {
             algorithm.SolveAndFeedback(problem.m_Cities);
         }*/
 
-        /*grahamScanCoroutine = this.AddComponent<GrahamScanCoroutine>();
-        grahamScanCoroutine.Initialize(new List<City>(problem.m_Cities), lineWidth);*/
+        grahamScanCoroutine = this.AddComponent<GrahamScanCoroutine>();
+        grahamScanCoroutine.Initialize(new List<City>(problem.m_Cities), lineWidth);
 
         multipleGrahamScanCoroutine = this.AddComponent<MultipleGrahamScanCoroutine>();
         multipleGrahamScanCoroutine.Initialize(new List<City>(problem.m_Cities), lineWidth);
 
-        /*multipleGrahamScanLastFirstCoroutine = this.AddComponent<MultipleGrahamScanLastFirstCoroutine>();
-        multipleGrahamScanLastFirstCoroutine.Initialize(new List<City>(problem.m_Cities), lineWidth);*/
+        multipleGrahamScanLastFirstCoroutine = this.AddComponent<MultipleGrahamScanLastFirstCoroutine>();
+        multipleGrahamScanLastFirstCoroutine.Initialize(new List<City>(problem.m_Cities), lineWidth);
     }
 
     private void SpawnCities(List<City> cities) {

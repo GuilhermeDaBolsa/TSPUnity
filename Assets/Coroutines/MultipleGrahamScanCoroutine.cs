@@ -12,6 +12,8 @@ public class MultipleGrahamScanCoroutine : MonoBehaviour {
     public void Initialize(List<City> cities, float lineWidth) {
         this.cities = cities;
         this.lineWidth = lineWidth;
+
+        pathRenderers = new List<LineRenderer>();
     }
 
     private LineRenderer CreateNewPathRenderer() {
@@ -23,10 +25,6 @@ public class MultipleGrahamScanCoroutine : MonoBehaviour {
         pathRenderer.endColor = Color.black;
 
         return pathRenderer;
-    }
-
-    private void Awake() {
-        pathRenderers = new List<LineRenderer>();
     }
 
     private void Start() {

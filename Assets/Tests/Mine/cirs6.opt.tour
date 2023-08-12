@@ -1,0 +1,9 @@
+NAME : cirs6.opt.tour
+COMMENT : Optimal solution for cirs6
+TYPE : TOUR
+DIMENSION : 6
+TOUR_SECTION
+1 2 3 5 6 4
+-1
+EOF
+

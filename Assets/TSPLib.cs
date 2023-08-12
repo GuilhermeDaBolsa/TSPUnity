@@ -86,7 +86,7 @@ public class TSPLib {
 
         while(iterator.MoveNext()) {
             line = iterator.Current.Trim();
-            string[] IXYarray = line.Split(' ');
+            string[] IXYarray = line.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries);
 
             if (IXYarray.Length != 3)
                 return;

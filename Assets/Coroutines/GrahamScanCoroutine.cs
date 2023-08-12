@@ -12,9 +12,7 @@ public class GrahamScanCoroutine : MonoBehaviour {
     public void Initialize(List<City> cities, float lineWidth) {
         this.cities = cities;
         this.lineWidth = lineWidth;
-    }
 
-    private void Awake() {
         pathRenderer = new GameObject("Graham Scan Coroutine").AddComponent<LineRenderer>();
         pathRenderer.startWidth = lineWidth;
         pathRenderer.endWidth = lineWidth;
@@ -39,7 +37,7 @@ public class GrahamScanCoroutine : MonoBehaviour {
 
         UpdatePath(convexHull.points);
 
-        yield return new WaitForSeconds(6f);
+        yield return new WaitUntil(() => Input.GetKeyUp(KeyCode.KeypadEnter));
 
 
         /*
@@ -51,10 +49,10 @@ public class GrahamScanCoroutine : MonoBehaviour {
             cities.Remove(convexHull.points[i]);
 
 
-        City minChangedPoint = cities[0];
-        int p1minIndex = 0;
+        while (cities.Count > 0) {
+            City minChangedPoint = cities[0];
+            int p1minIndex = 0;
 
-        do {
             float minChangedDistance = float.MaxValue;
 
             foreach (var point in cities) {
@@ -79,7 +77,7 @@ public class GrahamScanCoroutine : MonoBehaviour {
             UpdatePath(convexHull.points);
             yield return new WaitUntil(() => Input.GetKeyUp(KeyCode.KeypadEnter));
 
-        } while (cities.Count > 0);
+        }
 
         float distance = 0;
 

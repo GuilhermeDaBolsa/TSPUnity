@@ -1,0 +1,9 @@
+NAME : crs5.opt.tour
+COMMENT : Optimal solution for crs5
+TYPE : TOUR
+DIMENSION : 5
+TOUR_SECTION
+1 2 4 5 3
+-1
+EOF
+

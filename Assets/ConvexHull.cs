@@ -65,6 +65,12 @@ public class ConvexHull {
     public static ConvexHull GrahamScan(List<City> cities) {
         List<City> convexHullPoints = new List<City>();
 
+        if (cities.Count < 3) {
+            convexHullPoints.AddRange(cities);
+            convexHullPoints.Add(convexHullPoints[0]);
+            return new ConvexHull(convexHullPoints);
+        }
+
         int lowestCityIndex = 0;
 
         /*
@@ -87,7 +93,6 @@ public class ConvexHull {
          */
         cities.Sort(1, cities.Count - 1, new OrientationComparer(cities[0]));
 
-
         /*
          * FILTER SORTED LIST TO FIND CONVEX POINTS ONLY
          */
@@ -97,6 +102,8 @@ public class ConvexHull {
 
         for (int i = 3; i < cities.Count; i++) {
             while (
+                convexHullPoints.Count > 1
+                &&
                 orientation(
                     convexHullPoints[convexHullPoints.Count - 2].position,
                     convexHullPoints[convexHullPoints.Count - 1].position,
