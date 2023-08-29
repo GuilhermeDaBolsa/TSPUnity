@@ -94,8 +94,9 @@ public class ChristofidesCoroutine : MonoBehaviour {
     }
 
     private IEnumerator Solve() {
-        // MOST CODE (SPECIALLY THE GRAPH AND BLOSSOM/MATCHING THINGS)
-        // IS FROM https://github.com/mikymaione/Held-Karp-algorithm/blob/master/Held-Karp-algorithm/Held-Karp-algorithm
+        /*
+         * MOSTLY FROM https://github.com/mikymaione/Held-Karp-algorithm
+         */
 
 
         //-- CALCULATE COST MATRIX AND MAKE A GRAPH OF IT --//

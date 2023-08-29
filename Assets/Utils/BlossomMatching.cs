@@ -1,4 +1,8 @@
-﻿using Graph;
+﻿/*
+ * FROM https://github.com/mikymaione/Held-Karp-algorithm
+ */
+
+using Graph;
 using System.Collections.Generic;
 
 public class BlossomMatching {

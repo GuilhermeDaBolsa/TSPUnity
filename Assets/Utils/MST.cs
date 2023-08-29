@@ -57,7 +57,9 @@ public class MST{
     }
 
 
-
+    /*
+     * FROM https://github.com/mikymaione/Held-Karp-algorithm
+     */
     public static void PrimsGraphed(float[,] distance, Graph.Graph G, int r_id) {
 
         HashSet<int> S = new HashSet<int>(); // elements available
