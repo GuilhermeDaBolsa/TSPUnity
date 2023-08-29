@@ -2,7 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MultipleGrahamScanLastFirstCoroutine : MonoBehaviour {
+/*
+ * 3
+ * MAIN IDEA
+ * 
+ * Create several layers of convex hull in the cities;
+ *      - Create a convex hull of the cities, then remove the cities that are in the convex hull from the cities original list;
+ *      - Repeat (create more convex hulls and keep removing the cities until there are no more cities);
+ *      
+ * Merge the convex hulls from last to first;
+ *      - Take the cities from the last convex hull to merge into the first;
+ *      - From the cities of the last convex hull, see witch one is closer to the first convex hull edges
+ *      - Insert it into the first convex hull and remove from the last, until the last convex hull has no more points;
+ *      
+ * Repeat the merge step, merging the first convex hull with the (n - i)th, until there are no more convex hulls;
+ */
+
+public class MultipleConvexHullLastFirstCoroutine : MonoBehaviour {
 
     private List<City> cities;
 

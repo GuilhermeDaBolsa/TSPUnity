@@ -2,7 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GrahamScanCoroutine : MonoBehaviour {
+/*
+ * 1
+ * MAIN IDEA
+ * 
+ * Create one convex hull in the cities;
+ * Take the remaining cities and see witch one is closer to the convex hull edges;
+ * Insert it into the first convex hull;
+ */
+public class ConvexHullCoroutine : MonoBehaviour {
 
     private List<City> cities;
 

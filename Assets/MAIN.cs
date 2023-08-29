@@ -13,9 +13,10 @@ public class MAIN : MonoBehaviour {
     private LineRenderer BestPath;
 
     public List<TSP_VFX_Algorithm> TSP_solvers; //TODO (DEVERIA SER ALGO EXTERNO?)
-    private GrahamScanCoroutine grahamScanCoroutine;
-    private MultipleGrahamScanCoroutine multipleGrahamScanCoroutine;
-    private MultipleGrahamScanLastFirstCoroutine multipleGrahamScanLastFirstCoroutine;
+    private ConvexHullCoroutine grahamScanCoroutine;
+    private MultipleConvexHullCoroutine multipleGrahamScanCoroutine;
+    private MultipleConvexHullLastFirstCoroutine multipleGrahamScanLastFirstCoroutine;
+    private ChristofidesCoroutine christofidesCoroutine;
 
     void Start() {
 
@@ -37,42 +38,24 @@ public class MAIN : MonoBehaviour {
          * 
          * --- Does not have opt. tour ---
          * burma14, bier127, att532, ali535, brd14051
+         * 
+         * OBS: ALL ULYSSES ARE 'GEO' TYPE OF EDGES NOT 'EUCL_2D'... PROB. THATS WHY I THOUGHT THE OPT TOUR WAS WRONG
          */
 
-        TSP problem = TSPLib.Import("Assets/Tests/Mine/", "ulysses8");
+        TSP problem = TSPLib.Import("Assets/Tests/TSPLib/", "ulysses16");
 
         SpawnCities(problem.m_Cities);
 
-
-        float[] externalValues = new float[4] { 
-            problem.m_Cities[0].position.y,
-            problem.m_Cities[0].position.x,
-            problem.m_Cities[0].position.y,
-            problem.m_Cities[0].position.x 
-        };
-        
-        foreach(var city in problem.m_Cities) {
-            if (city.position.y > externalValues[0])
-                externalValues[0] = city.position.y;
-
-            if (city.position.y < externalValues[2])
-                externalValues[2] = city.position.y;
-
-            if (city.position.x > externalValues[1])
-                externalValues[1] = city.position.x;
-
-            if (city.position.x < externalValues[3])
-                externalValues[3] = city.position.x;
-        }
+        problem.CalculateExternalBounds();
 
         mainCamera.transform.position = new Vector3(
-            (externalValues[1] + externalValues[3]) / 2,
-            (externalValues[0] + externalValues[2]) / 2,
+            (problem.leftMostValue + problem.rightMostValue) / 2,
+            (problem.topMostValue + problem.bottomMostValue) / 2,
             -10
         );
 
-        float xDistance = externalValues[1] - externalValues[3];
-        float yDistance = externalValues[0] - externalValues[2];
+        float xDistance = problem.rightMostValue - problem.leftMostValue;
+        float yDistance = problem.topMostValue - problem.bottomMostValue;
 
         float greaterDistance = xDistance > yDistance ? xDistance : yDistance;
 
@@ -94,20 +77,23 @@ public class MAIN : MonoBehaviour {
             //this.AddComponent<BranchAndBound>(),
             //this.AddComponent<BranchAndBoundGFG>(),
             this.AddComponent<ConvexHullGrahamScan>(),
-        };
+        }; 
 
         foreach (var algorithm in TSP_solvers) {
             algorithm.SolveAndFeedback(problem.m_Cities);
         }*/
 
-        grahamScanCoroutine = this.AddComponent<GrahamScanCoroutine>();
-        grahamScanCoroutine.Initialize(new List<City>(problem.m_Cities), lineWidth);
+        //grahamScanCoroutine = this.AddComponent<ConvexHullCoroutine>();
+        //grahamScanCoroutine.Initialize(new List<City>(problem.m_Cities), lineWidth);
 
-        multipleGrahamScanCoroutine = this.AddComponent<MultipleGrahamScanCoroutine>();
-        multipleGrahamScanCoroutine.Initialize(new List<City>(problem.m_Cities), lineWidth);
+        //multipleGrahamScanCoroutine = this.AddComponent<MultipleConvexHullCoroutine>();
+        //multipleGrahamScanCoroutine.Initialize(new List<City>(problem.m_Cities), lineWidth);
 
-        multipleGrahamScanLastFirstCoroutine = this.AddComponent<MultipleGrahamScanLastFirstCoroutine>();
-        multipleGrahamScanLastFirstCoroutine.Initialize(new List<City>(problem.m_Cities), lineWidth);
+        //multipleGrahamScanLastFirstCoroutine = this.AddComponent<MultipleConvexHullLastFirstCoroutine>();
+        //multipleGrahamScanLastFirstCoroutine.Initialize(new List<City>(problem.m_Cities), lineWidth);
+
+        christofidesCoroutine = this.AddComponent<ChristofidesCoroutine>();
+        christofidesCoroutine.Initialize(new List<City>(problem.m_Cities), lineWidth);
     }
 
     private void SpawnCities(List<City> cities) {
@@ -124,6 +110,8 @@ public class MAIN : MonoBehaviour {
 
         for (int i = 0; i < bestPathIndexes.Count; i++)
             BestPath.SetPosition(i, path[bestPathIndexes[i]].position);
+
+        BestPath.enabled = false;
     }
 
     private LineRenderer CreateLineRenderer(string objName, float lineWidth, Color lineColor) {

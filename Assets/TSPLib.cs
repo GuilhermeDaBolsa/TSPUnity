@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using UnityEngine;
 
 public class TSPLib {
 
@@ -13,7 +14,15 @@ public class TSPLib {
         ReadTSPFile(ref tsp, fileFolderPath, fileName);
         ReadOptTourFile(ref tsp, fileFolderPath, fileName);
 
-        tsp.ConcludeImporting();
+        //-- CALCULATE BEST TOUR DISTANCE --//
+        tsp.m_BestTourDistance = 0;
+        for (int i = 0; i < tsp.m_BestTourIndexes.Count - 1; i++) {
+            tsp.m_BestTourDistance += Vector2.Distance(
+                tsp.m_Cities[tsp.m_BestTourIndexes[i]].position,
+                tsp.m_Cities[tsp.m_BestTourIndexes[i + 1]].position);
+        }
+
+        Debug.Log("Problem " + tsp.m_Name + " loaded! Best tour distance is " + tsp.m_BestTourDistance);
 
         return tsp;
     }

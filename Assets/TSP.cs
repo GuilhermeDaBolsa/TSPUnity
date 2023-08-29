@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class TSP {
 
@@ -11,31 +9,40 @@ public class TSP {
     public int m_Size;
 
 
-    private string m_filePath;
-    private string m_fileName;
+    public List<City> m_Cities;
 
     public List<int> m_BestTourIndexes;
     public float m_BestTourDistance;
 
-    public List<City> m_Cities;
+    public float topMostValue;
+    public float bottomMostValue;
+    public float leftMostValue;
+    public float rightMostValue;
+
 
     public TSP() {
         m_Cities = new List<City>();
         m_BestTourIndexes = new List<int>();
     }
 
-    public void ConcludeImporting() {
-        CalculateBestTourDistance();
-        Debug.Log("Problem " + m_Name + " loaded! Best tour distance is " + m_BestTourDistance);
-    }
+    public void CalculateExternalBounds() {
+        topMostValue = m_Cities[0].position.y;
+        bottomMostValue = m_Cities[0].position.y;
+        leftMostValue = m_Cities[0].position.x;
+        rightMostValue = m_Cities[0].position.x;
 
-    private void CalculateBestTourDistance() {
-        m_BestTourDistance = 0;
+        for (int i = 1; i < m_Cities.Count; i++) {
+            var city = m_Cities[i];
 
-        for (int i = 0; i < m_BestTourIndexes.Count - 1; i++) {
-            m_BestTourDistance += Vector2.Distance(
-                m_Cities[m_BestTourIndexes[i]].position,
-                m_Cities[m_BestTourIndexes[i + 1]].position);
+            if (city.position.y > topMostValue)
+                topMostValue = city.position.y;
+            else if(city.position.y < bottomMostValue)
+                bottomMostValue = city.position.y;            
+
+            if (city.position.x > leftMostValue)
+                leftMostValue = city.position.x;
+            else if (city.position.x < rightMostValue)
+                rightMostValue = city.position.x;
         }
     }
 }
