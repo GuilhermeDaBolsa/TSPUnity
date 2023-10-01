@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ConvexHullGrahamScan : TSP_VFX_Algorithm {
+public class ConvexHull_InsertAll : TSP_VFX_Algorithm {
 
     protected override void Initializer() {
         base.SetUp("Convex Hull Graham Scan", 0.2f, Color.blue);

@@ -2,78 +2,87 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BranchAndBound : TSP_VFX_Algorithm {
+public class BranchAndBoundBFS : TSP_VFX_Algorithm {
     protected override void Initializer() {
-        base.SetUp("Branch And Bound", 0.2f, Color.gray);
+        base.SetUp("Branch And Bound BFS", 0.2f, Color.gray);
     }
 
     protected override List<City> Solve(List<City> cities) {
 
-        TreeOfPossibilities possibilities = new TreeOfPossibilities(cities.Count);
+        TreeOfPossibilities exploredNodes = new TreeOfPossibilities(cities.Count);
 
-        TreeNode minNode = new TreeNode(ref cities);
-        minNode.ReduceNodeMatrix();
+        TreeNode bestNode = new TreeNode(ref cities);
+        bestNode.ReduceNodeMatrix();
 
-        possibilities.Add(new List<TreeNode> { minNode });
+        exploredNodes.Add(new List<TreeNode> { bestNode });
 
         do {
-            minNode = possibilities.ExtractMin();
+            bestNode = exploredNodes.ExtractMin();
 
-            List<TreeNode> expandedPossibilities = new List<TreeNode>(minNode.citiesAvailableForNextStep.Count);
+            List<TreeNode> newExploredNodes = new List<TreeNode>(bestNode.citiesAvailableForNextStep.Count);
             
-            foreach (var cityDestination in minNode.citiesAvailableForNextStep) {
-                TreeNode newLeafNode = new TreeNode(ref minNode, cityDestination);
+            foreach (var nextCity in bestNode.citiesAvailableForNextStep) {
+                TreeNode exploredNode = new TreeNode(ref bestNode, nextCity);
                 
-                newLeafNode.ReduceNodeMatrix();
+                exploredNode.ReduceNodeMatrix();
 
-                expandedPossibilities.Add(newLeafNode);
+                newExploredNodes.Add(exploredNode);
             }
 
-            possibilities.Add(expandedPossibilities);
+            exploredNodes.Add(newExploredNodes);
 
-        } while (possibilities.Min().citiesAvailableForNextStep.Count > 0);
+        } while (exploredNodes.Min().citiesAvailableForNextStep.Count > 0);
 
-        possibilities.Min().pathTookUntilNow.Add(cities[0]);
-        return possibilities.Min().pathTookUntilNow;
+        exploredNodes.Min().pathTookUntilNow.Add(cities[0]);
+        return exploredNodes.Min().pathTookUntilNow;
     }
 
+    /*
+     * Represents all possible paths in the BFS
+     * Uses a binary heap to keep track of the next node to be explored
+     */
     public class TreeOfPossibilities {
-        public BinaryHeap<float, List<TreeNode>> heapOfPossibilities;
+        public BinaryHeap<float, List<TreeNode>> nodesToExplore;
 
         public TreeOfPossibilities(int treeHeight) {
-            heapOfPossibilities = new BinaryHeap<float, List<TreeNode>>((int)Mathf.Pow(2, treeHeight + 1));
+            nodesToExplore = new BinaryHeap<float, List<TreeNode>>((int)Mathf.Pow(2, treeHeight + 1));
         }
 
-        public void Add(List<TreeNode> listOfPossibilities) {
-            listOfPossibilities.Sort(new TreeNodeComparer());
+        public void Add(List<TreeNode> newUnexploredNodes) {
+            newUnexploredNodes.Sort(new TreeNodeComparer());
 
-            heapOfPossibilities.Add(
-                listOfPossibilities[listOfPossibilities.Count - 1].costOfCurrentNode, listOfPossibilities);
+            var costOfBestNewUnexploredNode = newUnexploredNodes[newUnexploredNodes.Count - 1].costOfCurrentNode;
+
+            nodesToExplore.Add(costOfBestNewUnexploredNode, newUnexploredNodes);
         }
 
         public TreeNode Min() {
-            var minPossibilitiesList = heapOfPossibilities.GetMin().value;
-            return minPossibilitiesList[minPossibilitiesList.Count - 1];
+            var bestNodeList = nodesToExplore.GetMin().value;
+            return bestNodeList[bestNodeList.Count - 1];
         }
 
         public TreeNode ExtractMin() {
-            List<TreeNode> minPossibilitiesList = heapOfPossibilities.GetMin().value;
+            List<TreeNode> bestNodeList = nodesToExplore.GetMin().value;
 
-            TreeNode minValue = minPossibilitiesList[minPossibilitiesList.Count - 1];
+            TreeNode bestNode = bestNodeList[bestNodeList.Count - 1];
 
-            minPossibilitiesList.RemoveAt(minPossibilitiesList.Count - 1);
+            bestNodeList.RemoveAt(bestNodeList.Count - 1);
 
-            if(minPossibilitiesList.Count == 0) {
-                heapOfPossibilities.ExtractMin();
+            if(bestNodeList.Count == 0) {
+                nodesToExplore.ExtractMin();
             } else {
-                float newHeapNodeKey = minPossibilitiesList[minPossibilitiesList.Count - 1].costOfCurrentNode;
-                heapOfPossibilities.IncreaseKey(0, newHeapNodeKey); //0 because min node is allways 0
+                float newHeapNodeKey = bestNodeList[bestNodeList.Count - 1].costOfCurrentNode;
+                nodesToExplore.IncreaseKey(0, newHeapNodeKey); //0 because min node is allways 0
             }
 
-            return minValue;
+            return bestNode;
         }
     }
 
+    /*
+     * Represents a node in the path chosen by the BFS
+     * Contains mainly the cost of the path, cost matrix and some other helper variables
+     */
     public class TreeNode {
 
         public float[,] distanceCostMatrix;
@@ -84,7 +93,9 @@ public class BranchAndBound : TSP_VFX_Algorithm {
         private bool[] disabledRows;
         private bool[] disabledColumns;
 
-        //This constructor should be used to create the first node only
+
+        //Constructor to be used when creating the first node of the path ONLY
+        //it just initializes every variable to its initial state, like calculating the cost matrix
         public TreeNode(ref List<City> cities) {
             distanceCostMatrix = new float[cities.Count, cities.Count];
 
@@ -114,7 +125,8 @@ public class BranchAndBound : TSP_VFX_Algorithm {
             Array.Fill(disabledColumns, false);
         }
 
-        //This constructor should be used to create every other node besides the first one
+
+        //Contructor to be used when creating every other node of the path besides the first one
         public TreeNode(ref TreeNode fatherNode, City cityDestination) {
             City cityOrigin = fatherNode.pathTookUntilNow[fatherNode.pathTookUntilNow.Count - 1];
             distanceCostMatrix = (float[,])fatherNode.distanceCostMatrix.Clone();
@@ -223,7 +235,7 @@ public class BranchAndBound : TSP_VFX_Algorithm {
         }
 
         private bool IsInvalidValue(float value) {
-            return value == float.MaxValue; //all max value floats are not to be considered
+            return value == float.MaxValue; //all max value floats are not to be considered (i.e invalid)
         }
     }
 

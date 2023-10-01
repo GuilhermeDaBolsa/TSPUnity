@@ -30,7 +30,7 @@ public class BinaryHeap<Key, Value> where Key : System.IComparable<Key> {
         int i = heapArray.Count;
         heapArray.Add(new Node(key, value));
 
-        //NOTE IF NEY KEY IS EQUAL TO PARENT KEY, THEN THE NEW KEY WILL BE FAVORED (BUT THE NORMAL WAY IS JUST < INSTEAD OF <=)
+        //NOTE IF NEW KEY IS EQUAL TO PARENT KEY, THEN THE NEW KEY WILL BE FAVORED (BUT THE NORMAL WAY IS JUST < INSTEAD OF <=)
         while (heapArray[i].CompareTo(heapArray[ParentIndexOf(i)]) <= 0) {
             SwapElements(i, ParentIndexOf(i));
 

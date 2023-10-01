@@ -42,7 +42,7 @@ public class MAIN : MonoBehaviour {
          * OBS: ALL ULYSSES ARE 'GEO' TYPE OF EDGES NOT 'EUCL_2D'... PROB. THATS WHY I THOUGHT THE OPT TOUR WAS WRONG
          */
 
-        TSP problem = TSPLib.Import("Assets/Tests/TSPLib/", "ulysses16");
+        TSP problem = TSPLib.Import("Assets/Tests/Mine/", "cirs6");
 
         SpawnCities(problem.m_Cities);
 
@@ -71,18 +71,19 @@ public class MAIN : MonoBehaviour {
     }
 
     private void SpawnTSPSolvers(TSP problem, float lineWidth) {
-        /*TSP_solvers = new List<TSP_VFX_Algorithm> {
+        TSP_solvers = new List<TSP_VFX_Algorithm> {
             //this.AddComponent<NearestNeighbour>(),
             //this.AddComponent<AntColony>(),
-            //this.AddComponent<BranchAndBound>(),
-            //this.AddComponent<BranchAndBoundGFG>(),
-            this.AddComponent<ConvexHullGrahamScan>(),
+            this.AddComponent<BranchAndBoundBFS>(),
+            this.AddComponent<BranchAndBoundDFS>(),
+            this.AddComponent<ConvexHull_InsertAll>(),
         }; 
 
         foreach (var algorithm in TSP_solvers) {
             algorithm.SolveAndFeedback(problem.m_Cities);
-        }*/
+        }
 
+        /*
         //grahamScanCoroutine = this.AddComponent<ConvexHullCoroutine>();
         //grahamScanCoroutine.Initialize(new List<City>(problem.m_Cities), lineWidth);
 
@@ -94,6 +95,7 @@ public class MAIN : MonoBehaviour {
 
         christofidesCoroutine = this.AddComponent<ChristofidesCoroutine>();
         christofidesCoroutine.Initialize(new List<City>(problem.m_Cities), lineWidth);
+        */
     }
 
     private void SpawnCities(List<City> cities) {
